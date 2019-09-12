@@ -1,0 +1,38 @@
+para rodar o compilador do typescript
+tsc -w
+Para instalar o nodemon
+npm -i nodemon -g
+Para rodar o nodemon:
+nodemon dist/main.js
+
+Rota - Modelo:
+
+    this.application.get('/info', [   // utilizando um array de callbacks
+        (req, resp, next) =>{
+            if(req.userAgent() && req.userAgent().includes('MSIE 7.0')) {
+            //resp.status(400)   // mesma forma do Respons()->json do Laravel
+            //resp.json({message:'Please, update your browser'})
+            let error: any = new Error()  // outro modo de fazer a mesma coisa usando objeto Error
+            error.statusCode = 400,
+            error.message = 'Please, update your browser'
+            return next(error) //para o processo com erro e não vai para o próximo callback
+            } 
+            return next() // vai para o próximo callback
+        },
+        (req, resp, next) =>{
+        //resp.status(200)
+        //resp.setHeader('Content-type','application/json')
+        //resp.send({message: 'hello'}) 
+        // Linhas acima correspondem ao método json do resp.
+            resp.json({
+                browser: req.userAgent(), //obtem dados do browser e do ambiente do usuário
+                method: req.method,       //obtem o método utilizado
+                url: req.href(),          //obtem a url utilizada (importante para saber se intranet/web)
+                path: req.path(),            //qual foi a rota colocada
+                query: req.query          //quais foram os parametros informados
+            })
+            return next();
+        }
+    ])
+
+
